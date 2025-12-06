@@ -1,31 +1,32 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, Date, Time
 from .database import Base
 
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    first_name = Column(String, nullable=True)
-    last_name = Column(String, nullable=True)
-    email = Column(String, unique=True)
-    password = Column(String)
+    first_name = Column(String(15), nullable=False)
+    last_name = Column(String(10), nullable=False)
+    email = Column(String, unique=True, nullable=False)
+    password = Column(String,nullable=False)
 
 
 class Otp(Base):
     __tablename__ = "otps"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer)
-    otp_code = Column(String)
+    user_id = Column(Integer, nullable=False)
+    otp_code = Column(String, nullable=False)
 
 
-class Task(Base):
-    __tablename__ = "tasks"
+class TodoModel(Base):
+    __tablename__ = "todos"
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String)
-    description = Column(String)
-    owner_id = Column(Integer)
-    date = Column(String)
-    time = Column(String)
-    completed = Column(Boolean, default=False)
+    title = Column(String,nullable=False)
+    subtitle = Column (String,nullable=True)
+    description = Column(String,nullable=False)
+    owner_id = Column(Integer,nullable=False)
+    date = Column(Date,nullable=False)
+    time = Column(Time,nullable=False)
+    completed = Column(Boolean, default=False,nullable=False)
