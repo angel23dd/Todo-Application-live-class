@@ -6,7 +6,7 @@ from email.message import EmailMessage
 
 
 
-def send_otp_email(to_email: str, otp_code: str) -> None:
+def send_otp_email(to_email: str, otp_code: str, first_name:str) -> None:
     """
     Send OTP to the user's email using SMTP settings from environment variables.
     If SMTP settings are not provided, this will print the OTP to stdout (dev fallback).
@@ -14,13 +14,13 @@ def send_otp_email(to_email: str, otp_code: str) -> None:
       SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, SMTP_FROM
     """
     smtp_host = "smtp.gmail.com"  # Default to Gmail SMTP
-    smtp_port = 465          # Default to Gmail SMTP port
+    smtp_port = 465      # Default to Gmail SMTP port
     smtp_user = os.getenv("SMTP_USER")
     smtp_password = os.getenv("SMTP_PASSWORD")
     smtp_from = os.getenv("SMTP_FROM",smtp_user)
 
     subject = "Your OTP for Todo Application"
-    body = f"dear {first_name}Your verification OTP is: {otp_code}\n\nIf you didn't request this, ignore this message."
+    body = f"Dear {first_name},\n\nYour verification OTP is: {otp_code}\n\nIf you didn't request this, ignore this message."
 
     if not smtp_host or not smtp_user or not smtp_password:
         # Development fallback — print to console so you can copy the OTP during testing
@@ -38,3 +38,4 @@ def send_otp_email(to_email: str, otp_code: str) -> None:
         server.login(smtp_user, smtp_password)
         server.send_message(msg)
 # ...existing code...
+print ('hello user')

@@ -9,7 +9,7 @@ class User(Base):
     last_name = Column(String(10), nullable=False)
     email = Column(String, unique=True, nullable=False)
     password = Column(String,nullable=False)
-
+    is_verified = Column(Boolean, default=False)
 
 class Otp(Base):
     __tablename__ = "otps"
@@ -30,3 +30,4 @@ class TodoModel(Base):
     date = Column(Date,nullable=False)
     time = Column(Time,nullable=False)
     completed = Column(Boolean, default=False,nullable=False)
+   

@@ -79,7 +79,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     # # create otp
     # In real application, generate a random OTP and send via email/SMS
     
-    code = ' '.join([str(random.randint(0,9)) for _ in range(7)])
+    code =str(random.randint(100000,999999)) 
     otp = models.Otp(
         user_id=db_user.id,
         otp_code=code  # In real application, generate a random OTP and send via email/SMS  
@@ -123,7 +123,7 @@ def login(data_info:Login, db: Session = Depends(get_db)):
         .first()
     )
 
-    if otp_entry and not otp_entry.is_verified:
+    if otp_entry and not otp_entry.user_id:
         raise HTTPException(
             status_code=403,
             detail="Please verify your email using the OTP sent to you."
