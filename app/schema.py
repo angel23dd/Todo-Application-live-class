@@ -8,12 +8,17 @@ class UserBase(BaseModel):
     password: str
 
 class UserCreate(UserBase):
-    first_name: str | None = None
-    last_name: str | None = None
+    first_name: Optional [str ] = None
+    last_name: Optional [str ] = None
+
+
+class Login(BaseModel):
+    email: str
+    password: str
 
 class User(UserBase):
     id: int
-    first_name: str | None = None
+    first_name: Optional [str ] = None
     last_name: str | None = None
 
     class Config:
@@ -21,9 +26,11 @@ class User(UserBase):
 
 class TodoBase(BaseModel):
     title:str
-    subtitle:str |None=None
+    subtitle:Optional [str] =None
     description:str
     owner_id:int
+
+
    
     
 class TodoCreate(TodoBase):

@@ -5,6 +5,7 @@ from email.message import EmailMessage
 
 
 
+
 def send_otp_email(to_email: str, otp_code: str) -> None:
     """
     Send OTP to the user's email using SMTP settings from environment variables.
@@ -14,12 +15,12 @@ def send_otp_email(to_email: str, otp_code: str) -> None:
     """
     smtp_host = "smtp.gmail.com"  # Default to Gmail SMTP
     smtp_port = 465          # Default to Gmail SMTP port
-    smtp_user = "example@gmail.com"
+    smtp_user = os.getenv("SMTP_USER")
     smtp_password = os.getenv("SMTP_PASSWORD")
-    smtp_from = os.getenv("SMTP_FROM")
+    smtp_from = os.getenv("SMTP_FROM",smtp_user)
 
     subject = "Your OTP for Todo Application"
-    body = f"Your verification OTP is: {otp_code}\n\nIf you didn't request this, ignore this message."
+    body = f"dear {first_name}Your verification OTP is: {otp_code}\n\nIf you didn't request this, ignore this message."
 
     if not smtp_host or not smtp_user or not smtp_password:
         # Development fallback — print to console so you can copy the OTP during testing
@@ -33,8 +34,7 @@ def send_otp_email(to_email: str, otp_code: str) -> None:
     msg.set_content(body)
 
     context = ssl.create_default_context()
-    with smtplib.SMTP(smtp_host, smtp_port) as server:
-        server.starttls(context=context)
+    with smtplib.SMTP_SSL(smtp_host, smtp_port,context=context ) as server:
         server.login(smtp_user, smtp_password)
         server.send_message(msg)
 # ...existing code...

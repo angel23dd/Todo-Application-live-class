@@ -26,7 +26,7 @@ class TodoModel(Base):
     title = Column(String,nullable=False)
     subtitle = Column (String,nullable=True)
     description = Column(String,nullable=False)
-    owner_id = Column(Integer,nullable=False)
+    owner_id = Column(Integer,nullable=False,index=True)
     date = Column(Date,nullable=False)
     time = Column(Time,nullable=False)
     completed = Column(Boolean, default=False,nullable=False)
