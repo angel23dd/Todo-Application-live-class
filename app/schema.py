@@ -16,6 +16,10 @@ class Login(BaseModel):
     email: str
     password: str
 
+class OtpVerify(BaseModel):
+    email: str
+    otp_code: str
+
 class User(UserBase):
     id: int
     first_name: Optional [str ] = None

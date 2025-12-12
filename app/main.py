@@ -54,7 +54,8 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
         first_name=user.first_name,
         last_name=user.last_name,
         email=user.email,
-        password=hashed_password
+        password=hashed_password,
+        is_verified=False
     )
 
     try:
@@ -64,22 +65,8 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     except Exception:
         db.rollback()
         raise HTTPException(status_code=500, detail="Database error creating user")
-# ...existing code...
 
-    # db_user = models.User(
-    #     first_name=user.first_name,
-    #     last_name=user.last_name,
-    #     email=user.email,
-    #     password=hashed_password
-    # )
-    # db.add(db_user)pkfc
-    # db.commit()
-    # db.refresh(db_user)
-
-    # # create otp
-    # In real application, generate a random OTP and send via email/SMS
-    
-    code =str(random.randint(100000,999999)) 
+    code =str(random.randint(100000, 999999)) 
     otp = models.Otp(
         user_id=db_user.id,
         otp_code=code  # In real application, generate a random OTP and send via email/SMS  
@@ -94,8 +81,31 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
         "id": getattr(db_user, "id", None),
         "first_name": db_user.first_name,
         "last_name": db_user.last_name,
-        "email": db_user.email
+        "email": db_user.email,
+        "message": "OTP sent to your email."
     }
+
+@app.post("/verify_otp", status_code=status.HTTP_200_OK)
+def verify_otp(data:OtpVerify,db: Session = Depends(get_db)):
+    user=db.query(models.User).filter(models.User.email == data.email).first()
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+    otp_entry = db.query(models.Otp).filter(
+        models.Otp.user_id == user.id,
+        models.Otp.otp_code == data.otp_code
+    ).first()
+
+    if not otp_entry:
+        raise HTTPException(status_code=400, detail="Invalid OTP")
+
+    # Mark user as verified
+    user.is_verified = True
+    db.commit()
+
+    return {"message": "Email verified successfully"}
 
 @app.post("/login", status_code=200)
 def login(data_info:Login, db: Session = Depends(get_db)):
@@ -116,18 +126,12 @@ def login(data_info:Login, db: Session = Depends(get_db)):
         )
 
     # 3. Check OTP verification status
-    otp_entry = (
-        db.query(models.Otp)
-        .filter(models.Otp.user_id == user.id)
-        .order_by(models.Otp.id.desc())
-        .first()
-    )
-
-    if otp_entry and not otp_entry.user_id:
+    if not user.is_verified:
         raise HTTPException(
             status_code=403,
-            detail="Please verify your email using the OTP sent to you."
+            detail="Email not verified. Please verify your email before logging in."
         )
+
 
     return {
         "message": "Login successful",
