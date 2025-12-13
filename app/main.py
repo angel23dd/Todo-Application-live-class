@@ -147,7 +147,7 @@ def login(data_info:Login, db: Session = Depends(get_db)):
 @app.post("/todos/", status_code=status.HTTP_201_CREATED)
 def create_todo(todo: TodoCreate, db: Session = Depends(get_db)):
     #checking if a todo already exists
-    existing = db.query(models.TodoModel).filter(models.TodoModel.title == todo.title).first()
+    existing = db.query(models.TodoModel).filter(models.TodoModel.title == todo.title, models.TodoModel.owner_id == todo.owner_id).first()
     if existing:
         raise HTTPException(
             status_code=409,
